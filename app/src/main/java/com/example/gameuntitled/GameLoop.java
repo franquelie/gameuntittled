@@ -1,26 +1,65 @@
 package com.example.gameuntitled;
 
-public class GameLoop implements Runnable{
 
-    private Thread gameThread;
-    private GamePanel gamePanel;
+import android.graphics.Canvas;
+import android.view.SurfaceHolder;
 
-    public GameLoop(GamePanel gamePanel){
-        this.gamePanel = gamePanel;
-        gameThread = new Thread(this);
+
+
+class GameLoop extends Thread {
+    private Game game;
+    private SurfaceHolder surfaceHolder;
+    private boolean isRunning = false;
+
+    public GameLoop(Game game, SurfaceHolder surfaceHolder) {
+        this.game = game;
+        this.surfaceHolder = surfaceHolder;
+    }
+
+    public double getAverageUPS() {
+        return 0;
+    }
+
+    public double getAverageFPS() {
+        return 0;
+    }
+
+    public void startLoop() {
+        isRunning = true;
+        start();
     }
 
     @Override
     public void run() {
+        super.run();
 
-        while (true) {
-            gamePanel.update();
-            gamePanel.render();
+        // Game loop
+        Canvas canvas;
+        while(isRunning) {
+
+            // Try to update and render game
+            try {
+                canvas = surfaceHolder.lockCanvas();
+                game.update();
+                game.draw(canvas);
+                surfaceHolder.unlockCanvasAndPost(canvas);
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            }
+
+
+
+
+            // Pause game loop to not exceed target UPS
+
+
+            // Skip frames to keep up with target UPS
+
+
+            // Calculate average UPS and FPS
+
+
+
         }
-
-    }
-
-    public void startGameLoop(){
-        gameThread.start();
     }
 }
