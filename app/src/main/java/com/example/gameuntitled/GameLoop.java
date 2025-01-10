@@ -10,6 +10,8 @@ class GameLoop extends Thread {
     private Game game;
     private SurfaceHolder surfaceHolder;
     private boolean isRunning = false;
+    private double averageUPS;
+    private double averageFPS;
 
     public GameLoop(Game game, SurfaceHolder surfaceHolder) {
         this.game = game;
@@ -17,11 +19,11 @@ class GameLoop extends Thread {
     }
 
     public double getAverageUPS() {
-        return 0;
+        return averageUPS;
     }
 
     public double getAverageFPS() {
-        return 0;
+        return averageFPS;
     }
 
     public void startLoop() {
@@ -33,8 +35,17 @@ class GameLoop extends Thread {
     public void run() {
         super.run();
 
+        // Declare time and cycle count variables
+        int updateCount = 0;
+        int frameCount = 0;
+
+        long startTime;
+        long elapsedTime;
+        long sleepTime;
+
         // Game loop
         Canvas canvas;
+        startTime = System.currentTimeMillis();
         while(isRunning) {
 
             // Try to update and render game
@@ -47,16 +58,22 @@ class GameLoop extends Thread {
                 e.printStackTrace();
             }
 
-
-
+            updateCount++;
+            frameCount++;
 
             // Pause game loop to not exceed target UPS
 
-
             // Skip frames to keep up with target UPS
 
-
             // Calculate average UPS and FPS
+            elapsedTime = System.currentTimeMillis() - startTime;
+            if(elapsedTime >= 1000) {
+                averageUPS = updateCount / (1E-3 * elapsedTime);
+                averageFPS = frameCount / (1E-3 * elapsedTime);
+                updateCount = 0;
+                frameCount = 0;
+                startTime = System.currentTimeMillis();
+            }
 
 
 
