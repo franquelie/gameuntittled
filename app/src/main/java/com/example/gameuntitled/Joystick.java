@@ -14,7 +14,10 @@ public class Joystick {
     private int innerCircleCenterPositionY;
     private Paint innerCirclePaint;
     private Paint outerCirclePaint;
-
+    private double joystickCenterToTouchDistance;
+    private boolean isPressed;
+    private double actuatorX;
+    private double actuatorY;
 
     public Joystick(int centerPositionX, int centerPositionY, int outerCircleRadius, int innerCircleRadius) {
 
@@ -39,6 +42,17 @@ public class Joystick {
         
 
     }
+
+    public void update() {
+        updateInnerCirclePosition();
+        
+    }
+
+    private void updateInnerCirclePosition() {
+        innerCircleCenterPositionX = (int) (outerCircleCenterPositionX + actuatorX*outerCircleRadius);
+        innerCircleCenterPositionY = (int) (outerCircleCenterPositionY + actuatorY*outerCircleRadius);
+    }
+
     public void draw(Canvas canvas) {
         // Draw outer circle
         canvas.drawCircle(
@@ -57,6 +71,48 @@ public class Joystick {
         );
     }
 
-    public void update() {
+    public boolean isPressed(double touchPositionX, double touchPositionY) {
+        joystickCenterToTouchDistance = Math.sqrt(
+                Math.pow(outerCircleCenterPositionX - touchPositionX, 2) +
+                Math.pow(outerCircleCenterPositionY - touchPositionY, 2)
+        );
+        return joystickCenterToTouchDistance < outerCircleRadius;
+
+        
+    }
+
+    public void setIsPressed(boolean isPressed) {
+        this.isPressed = isPressed;
+    }
+
+    public boolean getIsPressed() {
+        return isPressed;
+    }
+
+    public void setActuator(double touchPositionX, double touchPositionY) {
+        double deltaX = touchPositionX - outerCircleCenterPositionX;
+        double deltaY = touchPositionY - outerCircleCenterPositionY;
+        double deltaDistance = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
+
+        if (deltaDistance < outerCircleRadius) {
+            actuatorX = deltaX/outerCircleRadius;
+            actuatorY = deltaY/outerCircleRadius;
+        } else {
+            actuatorX = deltaX/deltaDistance;
+            actuatorY = deltaY/deltaDistance;
+        }
+    }
+
+    public void resetActuator() {
+        actuatorX = 0.0;
+        actuatorY = 0.0;
+    }
+
+    public double getActuatorX() {
+        return actuatorX;
+    }
+
+    public double getActuatorY() {
+        return actuatorY;
     }
 }
