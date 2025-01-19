@@ -16,6 +16,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         // Set window to fullscreen (will hide status bar)
+        /* Did not removed these because app stops working if removed */
         Window window = getWindow();
         window.setFlags(
                 WindowManager.LayoutParams.FLAG_FULLSCREEN,
