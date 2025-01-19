@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import androidx.core.content.ContextCompat;
+
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -12,6 +14,7 @@ import android.view.SurfaceView;
  * objects to the screen
  */
 class Game extends SurfaceView implements SurfaceHolder.Callback {
+    private final Player player;
     private GameLoop gameLoop;
 
     public Game(Context context) {
@@ -23,17 +26,36 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         gameLoop = new GameLoop(this, surfaceHolder);
 
+        // Initialize player
+        player = new Player(getContext(), 2*500, 500, 30);
+
         setFocusable(true);
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+
+        // Handle touch event actions
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                player.setPosition((double) event.getX(), (double) event.getY());
+                return true;
+            case MotionEvent.ACTION_MOVE:
+                player.setPosition((double) event.getX(), (double) event.getY());
+                return true;
+        }
+
+        return super.dispatchTouchEvent(event);
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         gameLoop.startLoop();
-
     }
 
+
     @Override
-    public void surfaceChanged(SurfaceHolder holder, int i, int i1, int i2) {
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 
     }
 
@@ -47,6 +69,8 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
         super.draw(canvas);
         drawUPS(canvas);
         drawFPS(canvas);
+
+        player.draw(canvas);
     }
 
     public void drawUPS(Canvas canvas) {
@@ -68,5 +92,7 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void update() {
+        // Update game state
+        player.update();
     }
 }
