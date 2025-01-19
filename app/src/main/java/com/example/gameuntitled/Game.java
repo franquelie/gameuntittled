@@ -9,6 +9,9 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.example.gameuntitled.object.Enemy;
+import com.example.gameuntitled.object.Player;
+
 /**
  * Game manages all objects in the game and is responsible for updating all states and render all
  * objects to the screen
@@ -16,6 +19,7 @@ import android.view.SurfaceView;
 class Game extends SurfaceView implements SurfaceHolder.Callback {
     private final Joystick joystick;
     private final Player player;
+    private final Enemy enemy;
     private GameLoop gameLoop;
 
     public Game(Context context) {
@@ -29,13 +33,14 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         // Initialize game objects
         joystick = new Joystick(275, 700, 70, 40);
-        player = new Player(getContext(), 2*500, 500, 30);
+        player = new Player(getContext(), joystick, 2*500, 500, 30);
+        enemy = new Enemy(getContext(), player, 500, 200,30);
 
         setFocusable(true);
     }
 
     @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
+    public boolean onTouchEvent(MotionEvent event) {
 
         // Handle touch event actions
         switch (event.getAction()) {
@@ -55,7 +60,7 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
                 return true;
         }
 
-        return super.dispatchTouchEvent(event);
+        return super.onTouchEvent(event);
     }
 
     @Override
@@ -82,6 +87,7 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         joystick.draw(canvas);
         player.draw(canvas);
+        enemy.draw(canvas);
     }
 
     public void drawUPS(Canvas canvas) {
@@ -90,7 +96,7 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
         int color = ContextCompat.getColor(getContext(), R.color.magenta);
         paint.setColor(color);
         paint.setTextSize(50);
-        canvas.drawText("UPS: " + averageUPS, 100, 100, paint);
+        canvas.drawText("UPS: " + averageUPS, 100, 150, paint); // Changed y to 150
     }
 
     public void drawFPS(Canvas canvas) {
@@ -99,12 +105,13 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
         int color = ContextCompat.getColor(getContext(), R.color.magenta);
         paint.setColor(color);
         paint.setTextSize(50);
-        canvas.drawText("FPS: " + averageFPS, 100, 200, paint);
+        canvas.drawText("FPS: " + averageFPS, 100, 250, paint); // Changed y to 250
     }
 
     public void update() {
         // Update game state
         joystick.update();
-        player.update(joystick);
+        player.update();
+        enemy.update();
     }
 }
