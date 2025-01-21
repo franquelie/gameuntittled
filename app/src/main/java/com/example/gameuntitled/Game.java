@@ -22,7 +22,6 @@ import java.util.List;
 class Game extends SurfaceView implements SurfaceHolder.Callback {
     private final Joystick joystick;
     private final Player player;
-    // private final Enemy enemy;
     private GameLoop gameLoop;
     private List<Enemy> enemyList = new ArrayList<Enemy>();
 
@@ -38,7 +37,6 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
         // Initialize game objects
         joystick = new Joystick(275, 700, 70, 40);
         player = new Player(getContext(), joystick, 2*500, 500, 30);
-        // enemy = new Enemy(getContext(), player, 500, 200,30);
 
         setFocusable(true);
     }
