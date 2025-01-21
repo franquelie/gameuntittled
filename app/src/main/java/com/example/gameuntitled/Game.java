@@ -12,6 +12,9 @@ import android.view.SurfaceView;
 import com.example.gameuntitled.object.Enemy;
 import com.example.gameuntitled.object.Player;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Game manages all objects in the game and is responsible for updating all states and render all
  * objects to the screen
@@ -19,8 +22,9 @@ import com.example.gameuntitled.object.Player;
 class Game extends SurfaceView implements SurfaceHolder.Callback {
     private final Joystick joystick;
     private final Player player;
-    private final Enemy enemy;
+    // private final Enemy enemy;
     private GameLoop gameLoop;
+    private List<Enemy> enemyList = new ArrayList<Enemy>();
 
     public Game(Context context) {
         super(context);
@@ -34,7 +38,7 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
         // Initialize game objects
         joystick = new Joystick(275, 700, 70, 40);
         player = new Player(getContext(), joystick, 2*500, 500, 30);
-        enemy = new Enemy(getContext(), player, 500, 200,30);
+        // enemy = new Enemy(getContext(), player, 500, 200,30);
 
         setFocusable(true);
     }
@@ -87,7 +91,10 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         joystick.draw(canvas);
         player.draw(canvas);
-        enemy.draw(canvas);
+        for (Enemy enemy : enemyList) {
+            enemy.draw(canvas);
+        }
+
     }
 
     public void drawUPS(Canvas canvas) {
@@ -112,6 +119,15 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
         // Update game state
         joystick.update();
         player.update();
-        enemy.update();
+
+        // Spawn enemy if it is time to spawn new enemies
+        if(Enemy.readyToSpawn()) {
+            enemyList.add(new Enemy(getContext(), player));
+        }
+
+        // Update states of all enemies
+        for (Enemy enemy : enemyList) {
+            enemy.update();
+        }
     }
 }
