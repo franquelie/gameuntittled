@@ -11,6 +11,7 @@ import android.view.SurfaceView;
 
 import com.example.gameuntitled.object.Enemy;
 import com.example.gameuntitled.object.Player;
+import com.example.gameuntitled.object.Spell;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,7 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
     private final Player player;
     private GameLoop gameLoop;
     private List<Enemy> enemyList = new ArrayList<Enemy>();
+    private List<Spell> spellList = new ArrayList<Spell>();
 
     public Game(Context context) {
         super(context);
@@ -47,16 +49,25 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
         // Handle touch event actions
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                if(joystick.isPressed((double) event.getX(), (double) event.getY())) {
+                if (joystick.getIsPressed()) {
+                    // Joystick was pressed before this event -> cast spell
+                    spellList.add(new Spell(getContext(), player));
+                } else if (joystick.isPressed((double) event.getX(), (double) event.getY())) {
+                    // Joystick is pressed in this event -> setIsPressed(true)
                     joystick.setIsPressed(true);
+                } else {
+                    // Joystick was not pressed previously, and is not pressed in this event -> cast spell
+                    spellList.add(new Spell(getContext(), player));
                 }
                 return true;
             case MotionEvent.ACTION_MOVE:
+                // Joystick was pressed previously and is now moved
                 if(joystick.getIsPressed()) {
                     joystick.setActuator((double) event.getX(), (double) event.getY());
                 }
                 return true;
             case MotionEvent.ACTION_UP:
+                // Joystick was let go off -> setIsPressed(false) and resetActuator
                 joystick.setIsPressed(false);
                 joystick.resetActuator();
                 return true;
@@ -89,8 +100,13 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         joystick.draw(canvas);
         player.draw(canvas);
+
         for (Enemy enemy : enemyList) {
             enemy.draw(canvas);
+        }
+
+        for (Spell spell : spellList) {
+            spell.draw(canvas);
         }
 
     }
@@ -123,9 +139,14 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
             enemyList.add(new Enemy(getContext(), player));
         }
 
-        // Update states of all enemies
+        // Update states of each enemy
         for (Enemy enemy : enemyList) {
             enemy.update();
+        }
+
+        // Update states of each spell
+        for (Spell spell : spellList) {
+            spell.update();
         }
     }
 }
